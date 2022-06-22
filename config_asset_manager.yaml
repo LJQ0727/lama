@@ -1,0 +1,8 @@
+indir: images/mask_extract_results/
+outdir: images/lama_inputs/
+
+
+hydra:
+  job:
+    chdir: False
+

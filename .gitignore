@@ -2,6 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+not_used
+big-lama
+output
+outputs
+images
+
 
 # C extensions
 *.so

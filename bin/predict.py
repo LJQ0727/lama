@@ -4,12 +4,16 @@
 # ./bin/predict.py \
 #       model.path=<path to checkpoint, prepared by make_checkpoint.py> \
 #       indir=<path to input data> \
-#       outdir=<where to store predicts>
+#       mask_outdir=<where to store predicts>
 
 import logging
 import os
 import sys
 import traceback
+sys.path.append('.')    # Add cwd to python package searching path
+#  Assume the cwd is /lama root
+
+import shutil
 
 from saicinpainting.evaluation.utils import move_to_device
 
@@ -34,9 +38,13 @@ from saicinpainting.utils import register_debug_signal_handlers
 
 LOGGER = logging.getLogger(__name__)
 
-
-@hydra.main(config_path='../configs/prediction', config_name='default.yaml')
+# Run 'export TORCH_HOME=$(pwd) && export PYTHONPATH=$(pwd)' before execution
+@hydra.main(config_path='../', config_name='config_lama.yaml')  # This path is file-relative addressing
 def main(predict_config: OmegaConf):
+
+    shutil.rmtree(predict_config['mask_outdir'], ignore_errors=True)
+    shutil.rmtree(predict_config['origin_outdir'], ignore_errors=True)
+
     try:
         register_debug_signal_handlers()  # kill -10 <pid> will result in traceback dumped into log
 
@@ -58,18 +66,26 @@ def main(predict_config: OmegaConf):
         model.freeze()
         model.to(device)
 
-        if not predict_config.indir.endswith('/'):
-            predict_config.indir += '/'
+        # if not predict_config.indir.endswith('/'):
+        #     predict_config.indir += '/'
 
         dataset = make_default_val_dataset(predict_config.indir, **predict_config.dataset)
         with torch.no_grad():
             for img_i in tqdm.trange(len(dataset)):
                 mask_fname = dataset.mask_filenames[img_i]
                 cur_out_fname = os.path.join(
-                    predict_config.outdir, 
-                    os.path.splitext(mask_fname[len(predict_config.indir):])[0] + out_ext
+                    predict_config.mask_outdir, 
+                    os.path.splitext(mask_fname[len(predict_config.indir):])[0].split('_')[0] + out_ext
                 )
                 os.makedirs(os.path.dirname(cur_out_fname), exist_ok=True)
+                os.makedirs(predict_config.origin_outdir, exist_ok=True)
+
+                # Copy an original 
+                if predict_config.origin_outdir:
+                    shutil.copyfile(
+                        mask_fname.rsplit('_mask')[0] + predict_config.dataset.img_suffix,
+                        predict_config.origin_outdir +'/'+ os.path.splitext(mask_fname[len(predict_config.indir):])[0].split('_')[0] + predict_config.dataset.img_suffix
+                    )
 
                 batch = move_to_device(default_collate([dataset[img_i]]), device)
                 batch['mask'] = (batch['mask'] > 0) * 1

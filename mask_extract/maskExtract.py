@@ -15,7 +15,7 @@ from tqdm import tqdm       # Status display
 
 from maskUtils import polygons_to_bitmask, rle_to_bitmask
 
-g_PATH_TO_CONFIG = 'config.json'      # Set this to the config file
+g_PATH_TO_CONFIG = 'config_mask_extract.json'      # Set this to the config file
 
 if torch.cuda.is_available(): device = torch.device('cuda')
 else: device = torch.device('cpu')
@@ -123,12 +123,14 @@ def parse_id_filenamenoext(path: str):
 
 
 def main():
-    # The procedures
     config = Config(g_PATH_TO_CONFIG)
+    # Delete the output path
+    shutil.rmtree(config.output_dir, ignore_errors=True)
     if (not os.path.isdir(config.output_dir)): os.mkdir(config.output_dir)
     img_paths = config.get_img_paths()
     parent_dict = config.get_parent_ann_dict()
     output_count = 0
+
 
     for src_img_path in tqdm(img_paths):
         if output_count > config.output_size: 

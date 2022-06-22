@@ -1,0 +1,15 @@
+{
+    "mask_extract": {
+        "input_dir": "./images/chosen_bg_images_all/*.jpg",
+        "output_dir": "./images/mask_extract_results/",
+        "output_original_image": true,
+        "annotation_path": "./images/chosen_bg_images_all/coco_annotations_trainval2014/annotations/instances_val2014.json",
+        "mask_lower_threshold": 0.02,
+        "mask_upper_threshold": 0.25,
+        "dilation_kernel_size": 10,
+        "max_overlap_ratio": 0.01,
+        "merge_mask": true,
+        "output_size": 50
+}
+
+}

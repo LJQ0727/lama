@@ -247,6 +247,7 @@ def make_default_train_dataloader(indir, kind='default', out_size=512, mask_gen_
 
 
 def make_default_val_dataset(indir, kind='default', out_size=512, transform_variant='default', **kwargs):
+    # indir = glob.glob(indir)
     if OmegaConf.is_list(indir) or isinstance(indir, (tuple, list)):
         return ConcatDataset([
             make_default_val_dataset(idir, kind=kind, out_size=out_size, transform_variant=transform_variant, **kwargs) for idir in indir 

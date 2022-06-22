@@ -1,3 +1,8 @@
+# Lama
+## About modification
+This is modified to create a pipeline between extracting masks and using lama to do inpainting
+
+
 # 🦙 LaMa: Resolution-robust Large Mask Inpainting with Fourier Convolutions
 
 Official implementation by Samsung Research
