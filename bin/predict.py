@@ -73,10 +73,8 @@ def main(predict_config: OmegaConf):
         with torch.no_grad():
             for img_i in tqdm.trange(len(dataset)):
                 mask_fname = dataset.mask_filenames[img_i]
-                cur_out_fname = os.path.join(
-                    predict_config.mask_outdir, 
-                    os.path.splitext(mask_fname[len(predict_config.indir):])[0].split('_')[0] + out_ext
-                )
+                cur_out_fname = predict_config.mask_outdir + os.path.splitext(mask_fname[len(predict_config.indir):])[0].split('_')[0] + out_ext
+                
                 os.makedirs(os.path.dirname(cur_out_fname), exist_ok=True)
                 os.makedirs(predict_config.origin_outdir, exist_ok=True)
 
