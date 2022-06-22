@@ -1,0 +1,19 @@
+indir: images/lama_inputs
+mask_outdir: images/lama_outputs
+origin_outdir: images/lama_origin
+
+hydra:
+  job:
+    chdir: False
+
+model:
+  path: big-lama/
+  checkpoint: best.ckpt
+
+dataset:
+  kind: default
+  img_suffix: .jpg
+  pad_out_to_modulo: 8
+
+device: cuda
+out_key: inpainted
